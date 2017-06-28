@@ -8,7 +8,7 @@ public class Main {
 	 * Starts the application
 	 */
 	public static void main(String[] args) {
-		showMainMenu();
+		defineAndPopulateWh();
 	}
 	
 	/**
@@ -54,5 +54,9 @@ public class Main {
 		}
 	}
 	
+	private static void defineAndPopulateWh()
+	{
+				
+	}
 	
 }
