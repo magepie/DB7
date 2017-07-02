@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Created by nxirakia on 02.07.17.
@@ -100,24 +101,32 @@ public class Branch {
             }
             pstmt.close();
             pstmt2.close();
+            rs.close();
         }
         catch (SQLException e){
             e.printStackTrace();
         }
     }
-    public int searchForBranchId(String name){
+    public ArrayList<String> searchForBranchId(){
 
-        String selectSQL="SELECT city_id from branch where city_name='"+name+"'";
+        String selectSQL="SELECT city_name from branch";
+        ArrayList<String> branchList=new ArrayList<>();
+        String b=new String();
         try {
             Connection con = DB2ConnectionManager.getInstance().getConnection();
             PreparedStatement pstmt =con.prepareStatement(selectSQL);
             ResultSet rs=pstmt.executeQuery();
-            if(rs.next())
-                setCity_id(rs.getInt("city_id"));
+
+            while(rs.next()) {
+                b=rs.getString("city_name");
+                branchList.add(b);
+            }
+            pstmt.close();
+            rs.close();
 
         }catch (SQLException e){
             e.printStackTrace();
         }
-        return getCity_id();
+        return branchList;
     }
 }

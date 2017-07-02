@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Created by nxirakia on 02.07.17.
@@ -52,27 +53,33 @@ public class Shop {
             }
             pstmt.close();
             pstmt2.close();
+            rs.close();
         }
         catch (SQLException e){
             e.printStackTrace();
         }
     }
 
-    public int searchForShopId(String name){
+    public ArrayList<String> searchForShopId(){
 
-        String selectSQL="SELECT shop_id from shop where shop_name='"+name+"'";
+        String selectSQL="SELECT shop_id, shop_name from shop";
+        ArrayList<String> shopList=new ArrayList<>();
+        String s=new String();
         try {
             Connection con = DB2ConnectionManager.getInstance().getConnection();
             PreparedStatement pstmt =con.prepareStatement(selectSQL);
             ResultSet rs=pstmt.executeQuery();
-            if(rs.next())
-                setShop_id(rs.getInt("shop_id"));
+
+            while(rs.next()){
+                s=rs.getString("shop_name");
+                shopList.add(s);
+            }
             pstmt.close();
             rs.close();
         }catch (SQLException e){
             e.printStackTrace();
         }
 
-        return getShop_id();
+        return shopList;
     }
 }

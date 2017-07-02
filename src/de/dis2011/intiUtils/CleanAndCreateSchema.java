@@ -17,21 +17,16 @@ public class CleanAndCreateSchema {
         ArrayList<String> tables= new ArrayList<>();
         String dropSQL=null;
         PreparedStatement pstmt = null;
-        int rs;
-
+        
         tables.add("SHOP");
         tables.add("PRODUCT");
         tables.add("TIME");
         tables.add("BRANCH");
         tables.add("SALES");
-        //tables.add("test");
-        //tables.add("test2");
-
 
         try{
             System.out.println("Performing a clean up...");
             Connection con = DB2ConnectionManager.getInstance().getConnection();
-            //System.out.println("Connected database successfully...");
             for(String tableName:tables){
                 dropSQL="DROP TABLE "+tableName;
                 pstmt = con.prepareStatement(dropSQL);
@@ -46,7 +41,6 @@ public class CleanAndCreateSchema {
         catch (SQLException se) {
             se.printStackTrace();
         }catch(Exception e){
-            //Handle errors for Class.forName
             e.printStackTrace();
         }
     }
@@ -61,8 +55,6 @@ public class CleanAndCreateSchema {
 
         //String dropSQL=null;
         PreparedStatement pstmt = null;
-        int rs;
-
         try{
             System.out.println("Creating Warehouse schema...");
             Connection con = DB2ConnectionManager.getInstance().getConnection();

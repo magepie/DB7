@@ -27,7 +27,8 @@ public class ImportData {
         time.importTime(date);
         Sales sales= new Sales();
         sales.getCsvData(salesCsv,p,s,b);
-        System.out.println("******************************************\n Warehouse data are successfully imported!");
+
+        //System.out.println("******************************************\n Warehouse data are successfully imported!");
     }
 
     public ArrayList<Date> getDates(String csv){

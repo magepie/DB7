@@ -135,25 +135,32 @@ public class Product {
             }
             pstmt.close();
             pstmt2.close();
+            rs.close();
         }
         catch (SQLException e){
             e.printStackTrace();
         }
 
     }
-    public int searchForProdId(String prod_name){
+    public ArrayList<String> searchForProdId(){
 
-        String selectSQL="SELECT product_id from product where product_name='"+prod_name+"'";
+        String selectSQL="SELECT product_id, product_name from product ";
+        ArrayList<String> productList=new ArrayList<>();
+        String p=new String();
         try {
             Connection con = DB2ConnectionManager.getInstance().getConnection();
             PreparedStatement pstmt =con.prepareStatement(selectSQL);
             ResultSet rs=pstmt.executeQuery();
-            if(rs.next())
-                setProduct_id(rs.getInt("product_id"));
+
+            while(rs.next()) {
+                p=rs.getString("product_name");
+                productList.add(p);
+            }
             pstmt.close();
+            rs.close();
         }catch (SQLException e){
             e.printStackTrace();
         }
-        return getProduct_id();
+        return productList;
     }
 }

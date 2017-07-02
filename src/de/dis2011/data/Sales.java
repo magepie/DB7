@@ -1,12 +1,9 @@
 package de.dis2011.data;
 
-import com.sun.deploy.util.StringUtils;
-import com.sun.javafx.util.Utils;
-
 import java.io.*;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,60 +32,78 @@ public class Sales {
         this.items = items;
     }
 
-    public void getCsvData(String csv, Product p,Shop s, Branch b ) {
+    public void getCsvData(String csv, Product p, Shop s, Branch b ) {
         System.out.println("Loading all sales from sales.csv ...");
 
-        String insertSQL = "INSERT INTO sales(date, shop_id, product_id, city_id, number_items , revenue) VALUES (?,?,?,?,?,?)";
-        PreparedStatement pstmt =null;
+        String insertSQL = null;
+        Statement pstmt =null;
+        String ar[]= new String[5];
+        String city_name[]=new String[2];
 
-        ArrayList<Date> date= new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         Date d;
+        java.sql.Date sql_date;
 
+        ArrayList<String> products=p.searchForProdId();
+        ArrayList<String> shops=s.searchForShopId();
+        ArrayList<String> branches= b.searchForBranchId();
         int shop_id;
         int product_id;
         int city_id;
 
         try{
             String line;
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(csv),"UTF8"));
+            BufferedReader br = new BufferedReader(new FileReader(csv));
             Connection con = DB2ConnectionManager.getInstance().getConnection();
+            pstmt=con.createStatement();
 
             int i=0;
+            int batch_count=0;
             while ((line=br.readLine())!=null){
                 if(i>0) {
-                    String ar[] = line.split(";");
+                    ar = line.split(";");
                     d = dateFormat.parse(ar[0]);
-                    shop_id=s.searchForShopId(ar[1]);
-                    product_id=p.searchForProdId(ar[2]);
-                    String city_name[]= ar[1].split(" ");
-                    city_id=b.searchForBranchId(city_name[1]);
+                    sql_date=new java.sql.Date(d.getTime());
+                    city_name= ar[1].split(" ");  // Splitting ar[1] in two strings to obtain the city_name from string "Superstore $cityname" and then doing a select to obtain the city_id
                     setItems(Integer.parseInt(ar[3]));
                     setRevenue(Float.parseFloat(ar[4]));
+                    product_id=products.indexOf(ar[2])+1;
+                    shop_id=shops.indexOf(ar[1])+1;
+                    city_id=branches.indexOf(city_name[1])+1;
 
-                    pstmt = con.prepareStatement(insertSQL);
-                    pstmt.setDate(1, new java.sql.Date(d.getTime()));
-                    pstmt.setInt(2,shop_id);
-                    pstmt.setInt(3,product_id);
-                    pstmt.setInt(4,city_id);
-                    pstmt.setInt(5,getItems());
-                    pstmt.setDouble(6,getRevenue());
-                    pstmt.executeUpdate();
+                    insertSQL = "INSERT INTO sales(date, shop_id, product_id, city_id, number_items , revenue) VALUES ('"+sql_date+"',"+shop_id+","+product_id+","+city_id+","+getItems()+","+getRevenue()+")";
+                    pstmt.addBatch(insertSQL);
+
+                }
+                if(batch_count==20000){
+                    batch_count=0;
+                    pstmt.executeBatch();
+                    pstmt.clearBatch();
+                    System.out.println("executing batch..");
                 }
                 i++;
+                batch_count++;
+
             }
+            pstmt.executeBatch();
+            System.out.println("executing final batch..");
             pstmt.close();
         }catch (FileNotFoundException e)
         {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+
         } catch (ParseException e) {
             e.printStackTrace();
         }catch (SQLException e){
-            e.printStackTrace();
+            SQLException e2= e.getNextException();
+            if(e2!=null){
+                e2.printStackTrace();}
+            else e.printStackTrace();
         }
 
-    }
+      }
+
 }
 

@@ -20,14 +20,14 @@ public class Main {
 
 	private static void defineAndPopulateWh()
 	{
-		CleanAndCreateSchema cs = new CleanAndCreateSchema();
+		/*CleanAndCreateSchema cs = new CleanAndCreateSchema();
 		cs.cleanUp();
 		cs.createSchema();
 
 		System.out.println("******************************************");
 
 		ImportData i = new ImportData();
-		i.importData();
+		i.importData();*/
 
 	}
 	
