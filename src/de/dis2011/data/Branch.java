@@ -1,5 +1,10 @@
 package de.dis2011.data;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * Created by nxirakia on 02.07.17.
  */
@@ -58,5 +63,46 @@ public class Branch {
 
     public void setCountry_name(String country_name) {
         this.country_name = country_name;
+    }
+
+    public void loadImportBranch(){
+        PreparedStatement pstmt =null;
+        PreparedStatement pstmt2=null;
+
+        String selectSQL="SELECT st.stadtid, st.name , rg.regionid, rg.name, ld.landid, ld.name\n" +
+                "FROM db2inst1.stadtid st\n" +
+                "JOIN db2inst1.regionid rg on (rg.regionid = st.regionid)\n" +
+                "JOIN db2inst1.landid ld on (ld.landid = rg.landid) \n";
+        String insertSQL = "INSERT INTO branch(city_id, city_name, state_id, state_name,country_id, country_name) VALUES (?,?,?,?,?,?)";
+
+        try{
+            System.out.println("Searching and importing branches ...");
+            Connection con = DB2ConnectionManager.getInstance().getConnection();
+            pstmt= con.prepareStatement(selectSQL);
+            ResultSet rs= pstmt.executeQuery();
+
+            while(rs.next()){
+                setCity_id(rs.getInt(1));
+                setCity_name(rs.getString(2));
+                setState_id(rs.getInt(3));
+                setState_name(rs.getString(4));
+                setCountry_id(rs.getInt(5));
+                setCountry_name(rs.getString(6));
+
+                pstmt2=con.prepareStatement(insertSQL);
+                pstmt2.setInt(1,getCity_id());
+                pstmt2.setString(2,getCity_name());
+                pstmt2.setInt(3,getState_id());
+                pstmt2.setString(4,getState_name());
+                pstmt2.setInt(5,getCountry_id());
+                pstmt2.setString(6,getCountry_name());
+                pstmt2.executeUpdate();
+            }
+            pstmt.close();
+            pstmt2.close();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 }
