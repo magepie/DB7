@@ -139,5 +139,21 @@ public class Product {
         catch (SQLException e){
             e.printStackTrace();
         }
+
+    }
+    public int searchForProdId(String prod_name){
+
+        String selectSQL="SELECT product_id from product where product_name='"+prod_name+"'";
+        try {
+            Connection con = DB2ConnectionManager.getInstance().getConnection();
+            PreparedStatement pstmt =con.prepareStatement(selectSQL);
+            ResultSet rs=pstmt.executeQuery();
+            if(rs.next())
+                setProduct_id(rs.getInt("product_id"));
+            pstmt.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return getProduct_id();
     }
 }

@@ -57,4 +57,22 @@ public class Shop {
             e.printStackTrace();
         }
     }
+
+    public int searchForShopId(String name){
+
+        String selectSQL="SELECT shop_id from shop where shop_name='"+name+"'";
+        try {
+            Connection con = DB2ConnectionManager.getInstance().getConnection();
+            PreparedStatement pstmt =con.prepareStatement(selectSQL);
+            ResultSet rs=pstmt.executeQuery();
+            if(rs.next())
+                setShop_id(rs.getInt("shop_id"));
+            pstmt.close();
+            rs.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return getShop_id();
+    }
 }

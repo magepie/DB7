@@ -105,4 +105,19 @@ public class Branch {
             e.printStackTrace();
         }
     }
+    public int searchForBranchId(String name){
+
+        String selectSQL="SELECT city_id from branch where city_name='"+name+"'";
+        try {
+            Connection con = DB2ConnectionManager.getInstance().getConnection();
+            PreparedStatement pstmt =con.prepareStatement(selectSQL);
+            ResultSet rs=pstmt.executeQuery();
+            if(rs.next())
+                setCity_id(rs.getInt("city_id"));
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return getCity_id();
+    }
 }
