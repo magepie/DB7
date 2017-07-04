@@ -168,29 +168,23 @@ public class Main {
 		
 		switch (time_level){
 		case DAY:
-			specifics += "T.Day ";
-			break;
+			specifics += "T.Day, ";
+			//break;
 		case MONTH:
-			specifics += "T.Month ";
-			break;
+			specifics += "T.Month, ";
+			//break;
 		case QUARTER:
-			specifics += "T.Quarter ";
-			break;
+			specifics += "T.Quarter, ";
+			//break;
 		case YEAR:
 			specifics += "T.Year ";
 			break;
 		}
 		
-
-		//String selectSQL = "select P.Product_name, T.Quarter, T.Year, B.CITY_NAME, SUM(Revenue) AS REV from SALES as S inner join Time as T on (S.Date=T.Date) inner join Branch as B on (S.City_id=B.City_ID) inner join Product as P on (S.Product_id = P.Product_ID) GROUP BY (T.Year, T.Quarter, B.City_name, P.Product_name)"
-				//+ "			ORDER BY B.CITY_NAME, T.Year, T.Quarter, P.Product_name";
 		String selectSQL = "select " + specifics + ", SUM(Number_items) as SOLD, SUM(Revenue) AS REV from SALES as S inner join Time as T on (S.Date=T.Date) inner join Branch as B on (S.City_id=B.City_ID) inner join Product as P on (S.Product_id = P.Product_ID) GROUP BY ROLLUP (" + specifics + ")"
 		+ "			ORDER BY " + specifics + " ASC";
 		Connection con = DB2ConnectionManager.getInstance().getConnection();
-        
-        //PreparedStatement preparedStatement = con.prepareStatement(selectSQL);
-        //preparedStatement.setInt(1, 1001);
-        //ResultSet rs = preparedStatement.executeQuery(selectSQL);
+		
 		Statement stmt = null;
 		try {
 			stmt = con.createStatement();
@@ -224,42 +218,41 @@ public class Main {
 					case DAY:
 						dat = rs.getInt("Day");
 						if (dat > 0){
-							System.out.print(String.format("%-20s",dat));
+							System.out.print(String.format("%-5s",dat));
 						}
 						else
 						{
-							System.out.print(String.format("%-20s","-----"));
+							System.out.print(String.format("%-5s","-"));
 						}
-						
-						break;
+						//break;
 					case MONTH:
 						dat = rs.getInt("Month");
 						if (dat > 0){
-							System.out.print(String.format("%-20s",dat));
+							System.out.print(String.format("%-5s",dat));
 						}
 						else
 						{
-							System.out.print(String.format("%-20s","-----"));
+							System.out.print(String.format("%-5s","-"));
 						}
-						break;
+						//break;
 					case QUARTER:
 						dat = rs.getInt("Quarter");
 						if (dat > 0){
-							System.out.print(String.format("%-20s",dat + " Q "));
+							System.out.print(String.format("%-5s",dat + " Q "));
 						}
 						else
 						{
-							System.out.print(String.format("%-20s","-----"));
+							System.out.print(String.format("%-5s","-"));
 						}
-						break;
+						//break;
 					case YEAR:
 						dat = rs.getInt("Year");
 						if (dat > 0){
-							System.out.print(String.format("%-20s",dat));
+							System.out.print(String.format("%-5s",dat));
 						}
 						else
 						{
-							System.out.print(String.format("%-20s","-----"));
+							System.out.print(String.format("%-5s","-"));
 						}
 						break;
 					}
